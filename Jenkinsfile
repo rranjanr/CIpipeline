@@ -18,20 +18,23 @@ pipeline {
             agent {
                 docker {
                     image 'python:3.9-slim'
-                    args '-u root:root'
+                    args '--init'
                     reuseNode true
                 }
             }
             steps {
                 script {
                     try {
-                        sh '''#!/bin/bash
-                            set -e
+                        // Create test results directory
+                        sh 'mkdir -p test-results'
+                        
+                        // Install dependencies with specific version pins
+                        sh '''
                             echo "Installing dependencies..."
-                            pip install -r pyreq.txt --quiet
+                            python -m pip install --no-cache-dir -r pyreq.txt
                             
                             echo "Running tests..."
-                            python -m pytest test_app.py -v --junitxml=test-results/junit.xml
+                            pytest test_app.py -v --junitxml=test-results/junit.xml --capture=no
                         '''
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
@@ -41,7 +44,11 @@ pipeline {
             }
             post {
                 always {
-                    junit allowEmptyResults: true, testResults: 'test-results/junit.xml'
+                    junit(
+                        allowEmptyResults: true,
+                        testResults: 'test-results/junit.xml',
+                        skipPublishingChecks: true
+                    )
                 }
             }
         }
