@@ -44,6 +44,7 @@ def home():
             <li>Infrastructure as Code (IaC)</li>
             <li>Monitoring and Logging</li>
             <li>Security in DevOps</li>
+        </ul>
     </body>
     </html>
     '''
