@@ -8,8 +8,8 @@ def home():
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>DevOps Learning Journey</title>
         <style>
             body {
@@ -33,7 +33,6 @@ def home():
     </head>
     <body>
         <h1>🚀 DevOps is So Much Fun to Learn! 🚀</h1>
-        <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳</p>
         <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳</p>
     </body>
     </html>
