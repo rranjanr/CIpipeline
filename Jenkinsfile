@@ -36,21 +36,12 @@ pipeline {
                             python -m pip install --no-cache-dir -r pyreq.txt
                             
                             echo "Running tests..."
-                            python -m pytest test_app.py -v --junitxml=test-results/junit.xml --capture=no --disable-warnings
+                            python -m pytest test_app.py -v --capture=no --disable-warnings
                         '''
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error "Tests failed: ${e.message}"
                     }
-                }
-            }
-            post {
-                always {
-                    junit(
-                        allowEmptyResults: true,
-                        testResults: 'test-results/junit.xml',
-                        skipPublishingChecks: true
-                    )
                 }
             }
         }
@@ -124,7 +115,8 @@ pipeline {
             echo 'Pipeline completed successfully! New version is deployed.'
         }
         always {
-            cleanWs()
+            // Clean workspace using available commands
+            deleteDir()
         }
     }
 }
