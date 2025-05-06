@@ -15,13 +15,17 @@ pipeline {
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'python:3.9-slim'
+                    reuseNode true
+                }
+            }
             steps {
                 script {
                     try {
-                        // Create and enter Python virtual environment
                         sh '''
-                            python -m venv venv
-                            . venv/bin/activate
+                            python -m pip install --upgrade pip
                             pip install -r pyreq.txt
                             python -m pytest test_app.py --junitxml=test-results/junit.xml
                         '''
@@ -29,6 +33,11 @@ pipeline {
                         currentBuild.result = 'FAILURE'
                         error "Tests failed: ${e.message}"
                     }
+                }
+            }
+            post {
+                always {
+                    junit 'test-results/junit.xml'
                 }
             }
         }
