@@ -3,42 +3,37 @@ from flask import Flask
 app = Flask(__name__)
 
 @app.route('/')
-def webout():
+def home():
     return '''
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Welcome to DevOps World 🌍</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DevOps Learning Journey</title>
         <style>
             body {
-                background: linear-gradient(to right, #1e3c72, #2a5298);
-                color: #fff;
                 font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
                 text-align: center;
-                padding-top: 100px;
+                background-color: #f0f8ff;
             }
             h1 {
-                font-size: 2.5em;
+                color: #2c3e50;
                 margin-bottom: 20px;
-                animation: glow 1.5s ease-in-out infinite alternate;
-            }
-            @keyframes glow {
-                from {
-                    text-shadow: 0 0 10px #fff, 0 0 20px #0ff, 0 0 30px #0ff;
-                }
-                to {
-                    text-shadow: 0 0 20px #fff, 0 0 30px #0ff, 0 0 40px #0ff;
-                }
             }
             p {
-                font-size: 1.2em;
-                opacity: 0.9;
+                color: #34495e;
+                font-size: 18px;
+                line-height: 1.6;
             }
         </style>
     </head>
     <body>
         <h1>🚀 DevOps is So Much Fun to Learn! 🚀</h1>
+        <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳</p>
         <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳
     </body>
     </html>
