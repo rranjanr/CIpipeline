@@ -1,6 +1,6 @@
 from flask import Flask
 
-  app = Flask(__name__)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
@@ -35,6 +35,15 @@ def home():
         <h1>🚀 DevOps is So Much Fun to Learn! 🚀</h1>
         <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳</p>
         <h2>This is a test</h2>
+        <p>In this journey, we will explore the following topics:</p>
+        <ul>
+            <li>Continuous Integration (CI)</li>
+            <li>Continuous Deployment (CD)</li>
+            <li>Containerization with Docker</li>
+            <li>Cloud Computing</li>
+            <li>Infrastructure as Code (IaC)</li>
+            <li>Monitoring and Logging</li>
+            <li>Security in DevOps</li>
     </body>
     </html>
     '''
