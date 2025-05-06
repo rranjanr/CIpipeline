@@ -39,7 +39,7 @@ def webout():
     </head>
     <body>
         <h1>🚀 DevOps is So Much Fun to Learn! 🚀</h1>
-        <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳</p>
+        <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳
     </body>
     </html>
     '''
