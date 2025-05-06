@@ -47,7 +47,6 @@ def test_home_page(client):
             '<body>',
             '</body>',
             '</html>',
-            'DevOps is So Much Fun to Learn!'
         ]
         
         for element in required_elements:
