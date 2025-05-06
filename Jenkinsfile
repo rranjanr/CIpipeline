@@ -18,16 +18,20 @@ pipeline {
             agent {
                 docker {
                     image 'python:3.9-slim'
+                    args '-u root:root'
                     reuseNode true
                 }
             }
             steps {
                 script {
                     try {
-                        sh '''
-                            python -m pip install --upgrade pip
-                            pip install -r pyreq.txt
-                            python -m pytest test_app.py --junitxml=test-results/junit.xml
+                        sh '''#!/bin/bash
+                            set -e
+                            echo "Installing dependencies..."
+                            pip install -r pyreq.txt --quiet
+                            
+                            echo "Running tests..."
+                            python -m pytest test_app.py -v --junitxml=test-results/junit.xml
                         '''
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
@@ -37,7 +41,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'test-results/junit.xml'
+                    junit allowEmptyResults: true, testResults: 'test-results/junit.xml'
                 }
             }
         }
@@ -49,7 +53,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Tag current production image as 'previous' for backup
                         sh """
                             docker pull ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} || true
                             docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${DOCKER_IMAGE_NAME}:${PREVIOUS_IMAGE_TAG} || true
@@ -74,7 +77,6 @@ pipeline {
                         }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        // Restore previous image tag if build fails
                         sh """
                             docker tag ${DOCKER_IMAGE_NAME}:${PREVIOUS_IMAGE_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} || true
                         """
@@ -94,7 +96,6 @@ pipeline {
                         sh "docker exec -u root ansible ansible-playbook /root/deploy.yml"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        // If deployment fails, rollback to previous version
                         sh """
                             docker tag ${DOCKER_IMAGE_NAME}:${PREVIOUS_IMAGE_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
                             docker exec -u root ansible ansible-playbook /root/deploy.yml
@@ -112,6 +113,9 @@ pipeline {
         }
         success {
             echo 'Pipeline completed successfully! New version is deployed.'
+        }
+        always {
+            cleanWs()
         }
     }
 }
