@@ -31,10 +31,12 @@ pipeline {
                         // Install dependencies with specific version pins
                         sh '''
                             echo "Installing dependencies..."
+                            export PYTHONPATH=${WORKSPACE}
+                            export FLASK_ENV=testing
                             python -m pip install --no-cache-dir -r pyreq.txt
                             
                             echo "Running tests..."
-                            pytest test_app.py -v --junitxml=test-results/junit.xml --capture=no
+                            python -m pytest test_app.py -v --junitxml=test-results/junit.xml --capture=no --disable-warnings
                         '''
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
