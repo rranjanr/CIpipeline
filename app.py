@@ -34,6 +34,7 @@ def home():
     <body>
         <h1>🚀 DevOps is So Much Fun to Learn! 🚀</h1>
         <p>Hello everyone! Welcome to the world of CI/CD, containers, and cloud! ☁️🐳</p>
+        <h2>This is a test</h2>
     </body>
     </html>
     '''
