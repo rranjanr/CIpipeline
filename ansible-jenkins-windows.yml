@@ -1,24 +1,58 @@
+
 services:
   ansible:
     container_name: ansible
     image: apurwasingh/cansible
     restart: unless-stopped
     command: tail -f /dev/null
+    user: "1000:1000"  # Run as non-root user
     volumes:
-      - //var/run/docker.sock:/var/run/docker.sock
-      - ./deploy.yml:/root/deploy.yml
+      - //var/run/docker.sock:/var/run/docker.sock:ro  # Read-only access to Docker socket
+      - ./deploy.yml:/root/deploy.yml:ro  # Read-only access to deploy file
     tty: true
+    networks:
+      - ci_network
+    healthcheck:
+      test: ["CMD", "ps", "aux", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
 
   jenkins:
     container_name: jenkins
     image: apurwasingh/djentle
     restart: unless-stopped
     ports:
-      - "8080:8080"
-      - "50000:50000"
+      - "127.0.0.1:8080:8080"  # Only expose to localhost
+      - "127.0.0.1:50000:50000"  # Only expose to localhost
     volumes:
-      - //var/run/docker.sock:/var/run/docker.sock
+      - //var/run/docker.sock:/var/run/docker.sock:ro  # Read-only access
       - jenkins_home:/var/jenkins_home
+    networks:
+      - ci_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/login", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  ci_network:
+    driver: bridge
 
 volumes:
   jenkins_home:

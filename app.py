@@ -1,6 +1,11 @@
-from flask import Flask
+from flask import Flask, jsonify
 
 app = Flask(__name__)
+
+@app.route('/health')
+def health_check():
+    """Endpoint for health monitoring"""
+    return jsonify({"status": "healthy", "version": "1.0.0"})
 
 @app.route('/')
 def home():

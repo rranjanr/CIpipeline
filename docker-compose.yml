@@ -7,3 +7,25 @@ services:
     ports:
       - "8001:7000"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    volumes:
+      - /tmp/app-logs:/app/logs:rw
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+networks:
+  app-network:
+    driver: bridge
