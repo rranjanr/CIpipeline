@@ -2,21 +2,38 @@
 - name: Deploy the latest Flask app
   hosts: localhost
   tasks:
+    - name: Check Docker container presence
+      command: docker ps -q -f name=flask
+      register: container_exists
+      failed_when: false
+      changed_when: false
+
+    - name: Get container health status if exists
+      shell: docker inspect --format='{{.State.Health.Status}}' flask || echo "not_running"
+      register: container_health
+      failed_when: false
+      changed_when: false
+      when: container_exists.stdout != ""
+
     - name: Stop the running container
       docker_container:
         name: flask
         state: stopped
+      when: container_exists.stdout != ""
 
     - name: Remove the stopped container
       docker_container:
         name: flask
         state: absent
+        force_kill: true
+      when: container_exists.stdout != ""
 
     - name: Pull the latest image from Docker Hub
       docker_image:
         name: rranzan2001/flask
         tag: latest
         source: pull
+        force_source: true
 
     - name: Run the container with the latest image
       docker_container:
@@ -28,3 +45,34 @@
         ports:
           - "8001:7000"
         restart_policy: always
+        healthcheck:
+          test: ["CMD", "curl", "-f", "http://localhost:7000/health"]
+          interval: 30s
+          timeout: 10s
+          retries: 3
+          start_period: 10s
+        security_opts:
+          - no-new-privileges:true
+        read_only: false
+        volumes:
+          - /tmp/app-logs:/app/logs:rw
+
+    - name: Wait for container to become healthy
+      shell: "docker inspect -f '{{ '{{' }}.State.Health.Status{{ '}}' }}' flask"
+      register: health_status
+      retries: 10
+      delay: 3
+      until: health_status.stdout == "healthy"
+      failed_when:
+        - health_status.stdout != "healthy"
+        - health_status.rc != 0
+
+    - name: Verify application is responsive
+      uri:
+        url: http://localhost:8001/health
+        method: GET
+        status_code: 200
+      register: health_result
+      retries: 5
+      delay: 2
+      until: health_result.status == 200
